@@ -38,7 +38,7 @@ public class CinemaService {
         Movie movie = movieList.stream()
                 .filter(i -> i.getId() == id)
                 .findAny()
-                .orElseThrow(() -> new IllegalArgumentException());
+                .orElseThrow(() -> new MovieNotFoundException());
         return movie;
     }
 

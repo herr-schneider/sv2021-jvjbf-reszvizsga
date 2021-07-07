@@ -87,4 +87,39 @@ public class CinemaController {
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 .body(problem);
     }
+
+    @ExceptionHandler(MovieNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<Problem> handleMovieNotFound(MovieNotFoundException iae) {
+        Problem problem = Problem.builder()
+                .withType(URI.create("cinema/not-found"))
+                .withTitle("Not found!")
+                .withStatus(Status.NOT_FOUND)
+                .withDetail(iae.getMessage())
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+                .body(problem);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<Problem> handleValidException(MethodArgumentNotValidException mnve) {
+        List<Violation> violations = mnve.getBindingResult().getFieldErrors().stream()
+                .map(fe -> new Violation(fe.getField(), fe.getDefaultMessage()))
+                .collect(Collectors.toList());
+
+        Problem problem = Problem.builder()
+                .withType(URI.create("instruments/not-valid"))
+                .withTitle("Validation error")
+                .withStatus(Status.BAD_REQUEST)
+                .withDetail(mnve.getMessage())
+                .with("violations", violations)
+                .build();
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+                .body(problem);
+    }
 }
