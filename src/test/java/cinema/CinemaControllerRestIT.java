@@ -177,4 +177,13 @@ public class CinemaControllerRestIT {
         assertEquals(URI.create("cinema/bad-reservation"),result.getType());
         assertEquals(Status.BAD_REQUEST, result.getStatus());
     }
+
+    @Test
+    void createMovieWithInvalidFreeSpaces() {
+        Problem result = template.postForObject("/api/cinema",
+                new CreateMovieCommand("Bad Man", LocalDateTime.of(2021, 6, 30, 12, 30),
+                        15), Problem.class);
+        assertEquals(Status.BAD_REQUEST, result.getStatus());
+
+    }
 }
